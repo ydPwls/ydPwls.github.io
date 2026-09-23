@@ -21,6 +21,10 @@ import { expressiveCodeOptions, siteConfig } from "./src/site.config";
 
 // https://astro.build/config
 export default defineConfig({
+	devToolbar: {
+
+		enabled: false,
+	},
 	site: siteConfig.url,
 	image: {
 		domains: ["webmention.io"],
@@ -36,7 +40,7 @@ export default defineConfig({
 			name: siteConfig.title,
 			description: siteConfig.description,
 			lang: siteConfig.lang,
-			icon: "public/icon.svg", // the source for generating favicon & icons
+			icon: "public/cat-icon2.png", // the source for generating favicon & icons
 			icons: [
 				{
 					src: "icons/apple-touch-icon.png", // used in src/components/BaseHead.astro L:26
@@ -56,7 +60,7 @@ export default defineConfig({
 			],
 			start_url: "/",
 			background_color: "#1d1f21",
-			theme_color: "#2bbc8a",
+			theme_color: "#a7a7a7",
 			display: "standalone",
 			config: {
 				insertFaviconLinks: false,

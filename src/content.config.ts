@@ -26,6 +26,7 @@ const post = defineCollection({
 			draft: z.boolean().default(false),
 			ogImage: z.string().optional(),
 			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+			category: z.enum(["Development", "Japanese"]),
 			publishDate: z
 				.string()
 				.or(z.date())

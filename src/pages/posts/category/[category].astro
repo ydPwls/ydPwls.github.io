@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import { getAllPosts, groupPostsByYear } from "@/data/post";
+import PageLayout from "@/layouts/Base.astro";
+import { collectionDateSort } from "@/utils/date";
+
+export const getStaticPaths = (() => {
+	return [
+		{
+			params: { category: "development" },
+			props: { category: "Development" },
+		},
+		{
+			params: { category: "japanese" },
+			props: { category: "Japanese" },
+		},
+	];
+}) satisfies GetStaticPaths;
+
+interface Props {
+	category: "Development" | "Japanese";
+}
+
+const { category } = Astro.props;
+
+const allPosts = await getAllPosts();
+
+const categoryPosts = allPosts
+	.filter((post) => post.data.category === category)
+	.sort(collectionDateSort);
+
+const groupedByYear = groupPostsByYear(categoryPosts);
+const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
+
+const meta = {
+	title: category,
+	description: `${category} posts`,
+};
+---
+
+<PageLayout meta={meta}>
+	<div class="mb-10">
+		<h1 class="title mb-6">Posts</h1>
+
+		<nav class="flex flex-wrap gap-5" aria-label="Post categories">
+			<a class="font-medium" href="/posts/">
+				All
+			</a>
+			<a class="font-medium" href="/posts/category/development/">
+				Development
+			</a>
+			<a class="font-medium" href="/posts/category/japanese/">
+				Japanese
+			</a>
+		</nav>
+	</div>
+
+	{categoryPosts.length > 0 ? (
+		<div>
+			{descYearKeys.map((yearKey) => (
+				<section class="mb-16">
+					<h2 id={`year-${yearKey}`} class="title text-lg">
+						<span class="sr-only">Posts in</span>
+						{yearKey}
+					</h2>
+
+					<ul class="mt-5 space-y-4 text-start">
+						{groupedByYear[yearKey]?.map((p: CollectionEntry<"post">) => (
+							<li class="grid gap-1 sm:grid-cols-[auto_1fr] sm:[&_q]:col-start-2">
+								<PostPreview post={p} />
+							</li>
+						))}
+					</ul>
+				</section>
+			))}
+		</div>
+	) : (
+		<p class="text-muted">아직 {category} 카테고리에 작성된 글이 없습니다.</p>
+	)}
+</PageLayout>
